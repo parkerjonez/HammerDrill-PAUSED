@@ -1,6 +1,6 @@
 COMMAND LINE ACCESS 
- AWS CLI ACCESS 
- AWS ECR REPO ACCESS VIA CLI
+- AWS CLI ACCESS 
+- AWS ECR REPO ACCESS VIA CLI
 
 I just want to make it abundantly F**king clear, all of these web service platforms are shit.
 They're meant to keep dev ops employeed and not be human-friendly. F**K IT.
