@@ -1,3 +1,6 @@
+LOCAL ENVIRONMENT SETUP
+DOCKER SETUP
+
 Here are notes on how I set this up since I'm a noob. 
 
 ### Local environment ###

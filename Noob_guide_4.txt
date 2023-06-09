@@ -1,0 +1,75 @@
+COMMAND LINE ACCESS 
+ AWS CLI ACCESS 
+ AWS ECR REPO ACCESS VIA CLI
+
+I just want to make it abundantly F**king clear, all of these web service platforms are shit.
+They're meant to keep dev ops employeed and not be human-friendly. F**K IT.
+
+With that out of the way, here are a few steps to set up access to AWS command line and a ECR repository
+
+### set up a user in AWS using IAM ###
+ These instructions are out of date, but mostly work:
+
+
+#1. Log into AWS Management Console
+
+This is the web interface for managing your AWS resources. You can access it at https://aws.amazon.com/console/. If you don't have an AWS account yet, you'll need to create one.
+
+#2.  Navigate to Identity and Access Management (IAM)
+
+This is the service in AWS where you manage access to AWS resources. To get there, type "IAM" into the search bar at the top of the AWS Management Console and click on the IAM service when it comes up.
+
+#3. Create a new IAM user
+
+Click on "Users" in the left-hand sidebar, then click on the "Add User" button.
+Enter a username for the new user.
+For "Access type," select "Programmatic access." This means that the user will be able to interact with AWS through the AWS CLI and other APIs, but not through the AWS Management Console.
+
+#4. Set permissions for the new user
+
+On the "Set permissions" page, you have a few options. The simplest is to "Attach existing policies directly." This allows you to give the user pre-defined sets of permissions.
+If you're not sure which permissions the user needs, a good place to start is with "AmazonS3FullAccess," which gives the user full access to Amazon S3, a commonly-used service for storing files.
+
+#5. Review and create the user
+
+Review the user settings, then click "Create user."
+
+#6. Copy the Access Key ID and Secret Access Key
+
+After you create the user, you'll be taken to a page where you can download a .csv file containing the user's Access Key ID and Secret Access Key. This is the only time you'll be able to get this information, so make sure to download the .csv file and store it in a secure place.
+
+#7. Configure the AWS CLI with the new user's credentials
+
+Open a command line interface on your computer.
+Run the command aws configure.
+You'll be prompted to enter the Access Key ID and Secret Access Key. Copy these from the .csv file you downloaded.
+You'll also be prompted to enter a default region name and output format. You can leave these blank for now, and the AWS CLI will use default values.
+
+- but actually, you need to go back and add the programmatic access keys which you can do after creating a user
+
+
+### ADD ECR ACCESS POLICY ###
+
+#1 . Navigate to the IAM console
+
+Open the AWS Management Console and navigate to the IAM service.
+
+#2 . Find your user
+
+Click on "Users" in the left-hand sidebar, then click on the name of your user (parker_towerhousetools).
+
+#3 . Attach a policy
+
+Click on the "Add permissions" button.
+Select "Attach existing policies directly."
+In the policy search box, type AmazonEC2ContainerRegistryFullAccess and select the checkbox next to it when it appears.
+Click the "Next: Review" button, then the "Add permissions" button.
+The AmazonEC2ContainerRegistryFullAccess policy gives full access to all ECR actions and resources. If you want to limit the user's access to specific actions or resources, you'll need to create a custom policy.
+
+
+### SEE REPOS ###
+
+aws ecr describe-repositories --region your-region
+
+- For me, here was my region:
+aws ecr describe-repositories --region us-east-2
