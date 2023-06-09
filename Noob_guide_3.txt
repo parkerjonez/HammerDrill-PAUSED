@@ -1,0 +1,47 @@
+Moving to a production environment on AWS involves several steps. 
+
+### MANUAL WAY ###
+For this example, we'll use AWS Elastic Container Registry (ECR) for storing our Docker image, and AWS Elastic Container Service (ECS) for running the container. Here are the steps involved:
+
+# 1. Install and Configure the AWS CLI: The AWS Command Line Interface is a unified tool that provides a consistent interface for interacting with all parts of AWS. AWS CLI supports multiple platforms and is a necessary tool for deploying applications to AWS. You can install it following the instructions from the official AWS guide. Once installed, configure it with your AWS credentials using aws configure command.
+
+# 2. Create a Repository in AWS ECR: AWS ECR is a fully managed Docker container registry that makes it easy for developers to store, manage, and deploy Docker container images. You can create a new repository in AWS ECR by following the instructions on the AWS ECR page.
+
+# 3. Authenticate Docker to your ECR Registry: To push images to your new ECR repository, you'll need to authenticate Docker to the registry. AWS provides a get-login-password command that you can use to authenticate Docker.
+
+aws ecr get-login-password --region region | docker login --username AWS --password-stdin your-ecr-endpoint
+
+#4. Tag your Docker Image: Before you can push the image to ECR, you need to tag your Docker image with the URL of your ECR repository. Replace your-ecr-endpoint with the URI of your repository.
+
+docker tag hammer-image:latest your-ecr-endpoint:latest
+
+#5. Push your Docker Image to ECR: Now, you can push your Docker image to your ECR repository:
+
+docker push your-ecr-endpoint:latest
+
+$6. Create a Task Definition in AWS ECS: A Task Definition is required to run Docker containers in ECS. It describes the Docker container and the volume definitions of your application. You can create a new Task Definition on the ECS console.
+
+#7. Create a Service in AWS ECS: A service allows you to specify how many instances of your task definition to run. When creating the service, specify the task definition created in the previous step, and choose the desired number of tasks to run.
+
+#8. Set up Load Balancer (optional): If your application has multiple tasks, you might want to distribute the load among them. AWS provides the Elastic Load Balancer for this purpose. You can associate it with the ECS service.
+
+
+** Remember, AWS also provides other services for Docker deployment like AWS Fargate, which is a serverless compute engine for containers. It works with both ECS and EKS (Elastic Kubernetes Service).
+Before moving to production, ensure you've properly handled application logging, monitoring, and have set up continuous integration/continuous deployment (CI/CD) pipelines. AWS provides various services like AWS CloudWatch for monitoring, and AWS CodePipeline for CI/CD.
+
+
+
+### AWS FARGATE WAY ###
+
+#1. Install and Configure the AWS CLI: If not already done.
+#2. Create a Repository in AWS ECR: If not already done.
+#3. Authenticate Docker to your ECR Registry: If not already done.
+#4. Tag your Docker Image: If not already done.
+#5. Push your Docker Image to ECR: If not already done.
+#6. Create a Task Definition in AWS ECS: You still need a Task Definition to tell Fargate what container to run, but you choose Fargate as the launch type.
+#7. Create a Service in AWS ECS: When creating a Service in ECS, you choose Fargate as the launch type, specify the task definition created in the previous step, and choose the desired number of tasks to run.
+#8. Set up Load Balancer (optional): Similar to before, if you have multiple tasks and want to distribute the load, AWS provides Elastic Load Balancer for this purpose.
+
+With Fargate, you also have some additional options for scaling and load balancing, including the ability to use AWS Auto Scaling to automatically adjust the number of running tasks based on demand.
+
+Remember, always follow the best practices such as setting up application logging, monitoring, and continuous integration/continuous deployment (CI/CD) pipelines. AWS provides various services for these, like AWS CloudWatch for monitoring, and AWS CodePipeline for CI/CD.
