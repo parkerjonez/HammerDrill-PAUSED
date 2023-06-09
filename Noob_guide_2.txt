@@ -1,0 +1,141 @@
+Here are notes on how I set this up since I'm a noob. 
+
+### Local environment ###
+Anaconda - virual environment - python 3.10
+Visual Studio - make sure to use the conda virtual environment for the python interpreter 
+Git - using Visual Studio's source control. But first cloned repo via terminal
+Docker - using docker to create a container 
+
+#1 Steps to set up virtual environment:
+
+- set up conda virtual environment
+
+conda create -n myenv python=3.10
+
+conda activate myenv
+
+- install flask 
+
+pip install flask
+
+#2 clone your repo to local machine
+
+git clone https://github.com/yourusername/yourrepository.git
+
+#3 open project in Visual studio 
+- navigate to your project folder
+
+cd yourrepo
+
+- run visual studio code command. 
+- To get this command, go into Visual Studio 
+- and command-shift-p and type "Shell command: install 'code' command PATH"
+
+code . 
+
+#4 Install python extension in Visual Studio if you haven't already
+
+#5 Select conda environment. click on the Python version number, and then select the interpreter that includes myenv (or whatever you named your Conda environment).
+
+#6 Write code and commit/push changes to your source control aka Github
+
+
+
+
+### Docker ###
+Docker is a platform that allows you to encapsulate your application and its dependencies into a "container".
+It's a useful tool for ensuring that your application runs the same way regardless of the environment it's being run in.
+
+# 1. Create a Dockerfile
+
+-- Here is the first one:-----------------------
+# Use an official Python runtime as a parent image
+FROM python:3.10-slim
+
+# Set the working directory in the container to /app
+WORKDIR /app
+
+# Add the current directory contents into the container at /app
+ADD . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Make port 5000 available to the world outside this container
+EXPOSE 5000
+
+# Run app.py when the container launches
+CMD ["python", "app.py"]
+
+-------------------------------------------------
+This Dockerfile:
+
+Starts with a Python 3.7 base image
+Sets the working directory to /app
+Copies the current directory (.) into the container at /app
+Runs pip install to install the Python dependencies
+Opens port 5000 for the Flask app to communicate with the outside world
+Runs python app.py to start your Flask app
+Note: This Dockerfile assumes that you have a requirements.txt file in your project directory, 
+listing the dependencies for your Flask application.
+If you don't already have this, you can generate it using 
+pip freeze > requirements.txt 
+in your activated Conda environment.
+
+# 2. Build the Docker image
+
+docker build -t hammer-image .
+
+# 3. Run the Docker container
+- You can now run your application with the docker run command. 
+- The -p flag maps the port on your computer to the port in the Docker container.
+
+docker run -p 5000:5000 hammer-image
+
+
+- Your Flask application should now be running at http://localhost:5000! If it isn't, then here are the additional steps:
+
+- if there is a conflict at port 5000 then you need to map a different port with...
+
+docker run -p 5001:5000 hammer-image
+
+- if it still doesn't come up, you need to map local environment to Docker. You will modify the Dockerfile
+- Your Flask application inside Docker is running on 127.0.0.1:5000 as indicated in the terminal log. 
+- However, this address refers to the internal network inside the Docker container, not your machine. 
+- The Flask application is not directly accessible on your machine's localhost (127.0.0.1) unless you configure it to be.
+- This issue can be fixed by binding your Flask app to all available network interfaces inside the Docker container. 
+- You can do this by running Flask with the --host=0.0.0.0 parameter. This will make your Flask app available on your Docker container's IP address.
+- Modify the CMD line in your Dockerfile:
+
+# Run app.py when the container launches
+CMD ["flask", "run", "--host=0.0.0.0"]
+
+- now rebuild and rerun the docker container
+- and check the URLs at http://localhost:5001 or http://127.0.0.1:5001
+-  (The two IP addresses you see - 127.0.0.1:5000 and 172.17.0.2:5000 - are internal to the Docker container. )
+
+- Remember that every time you make changes to your application, 
+- you will need to rebuild your Docker image and rerun the Docker container.
+- In the real world, you would usually avoid running the application using python app.py 
+- and instead use a production-ready server like Gunicorn or uWSGI, but for development purposes running with python app.py is fine.
+
+
+# Additional note on docker / development best practices:
+The common practice is to access the service running inside the Docker container from your host machine's web browser. 
+The practice of mapping ports is also quite common and an integral part of how Docker functions. 
+The mapping allows you to access your containerized application as if it was running directly on your host machine.
+
+As per best practices, you would typically do the following:
+
+# 1. Local Development: Run the service (e.g., a Flask server) in a Docker container and use port mapping to access it from your local machine. For example, if your service runs on port 5000 inside the Docker container, you could map that to port 5000 (or another available port) on your local machine. You can then access the service at localhost:5000.
+
+# 2. Production Deployment: In a production environment, you would typically run your Docker containers in something like a Kubernetes cluster or use a service like AWS ECS (Elastic Container Service). These services have load balancers and other networking features that handle the mapping of ports and routing of requests to your containers.
+
+# 3. Debugging and Testing: For debugging and testing, you might choose to run the service locally (outside of Docker) to simplify the process of stepping through the code and running tests.
+
+Remember, the purpose of Docker is to create an isolated, consistent environment for running your application. 
+It's not meant to replace your local development environment or the production environment, 
+but to provide a layer of abstraction that makes it easier to manage and deploy your applications in various environments.
+
+
+

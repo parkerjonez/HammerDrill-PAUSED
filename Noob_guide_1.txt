@@ -1,0 +1,40 @@
+HERE IS THE GUIDE TO HOW WE WILL DEVELOP
+
+# 1. Local Development
+
+Start by creating a new Conda environment for your project. You can do this by using the command conda create -n your_env_name python=3.x.
+Activate the environment with conda activate your_env_name.
+Install necessary packages using conda install package_name or pip install package_name.
+Develop your Python application.
+
+# 2. Version Control with Git and GitHub
+
+Initialize a Git repository in your project directory using git init.
+Add your files to the Git repository with git add . (this adds all files) or git add specific_file (to add a specific file).
+Commit your changes with git commit -m "Your commit message".
+Create a new repository on GitHub, then link your local repository to the GitHub repository using git remote add origin your_github_repo_url.
+Push your local repository to GitHub with git push -u origin master.
+
+# 3. Containerization with Docker
+
+Create a Dockerfile in your project directory. This file will contain instructions on how to build your Docker image, such as the base image, any necessary dependencies, and the command to run your application.
+Build your Docker image with docker build -t your_image_name ..
+Test your Docker image locally with docker run your_image_name. Verify that your application is working as expected.
+
+# 4. Pushing Docker Image to AWS ECR
+
+Create a new repository in AWS ECR.
+Authenticate your Docker client to the Amazon ECR registry to which you intend to push your image. Use the aws ecr get-login-password --region region | docker login --username AWS --password-stdin your_registry_uri command.
+Tag your Docker image to match the new ECR repository with docker tag your_image_name:latest your_registry_uri/your_image_name:latest.
+Push your Docker image to the ECR repository with docker push your_registry_uri/your_image_name:latest.
+
+# 5. Deployment with AWS ECS
+
+Create a new task definition in AWS ECS. In the task definition, specify the Docker image you pushed to ECR, the required CPU and memory, any environment variables, and the command to run your application.
+Create a new ECS service. Select the task definition you created and specify the number of tasks you want to run.
+If necessary, create a new ECS cluster and add your service to it. Alternatively, you can add your service to an existing cluster.
+Your application is now running in a Docker container on AWS ECS. You can access it via the public IP address of the ECS task (if you're not using a load balancer) or via the DNS name of your load balancer (if you are).
+
+# 6. Continuous Integration/Continuous Deployment
+
+On every commit to your GitHub repository, you can set up GitHub Actions to automatically build a new Docker image, push it to ECR, and update your ECS service to use the new image. This is a more advanced topic and might require some additional research.
