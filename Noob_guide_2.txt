@@ -89,6 +89,8 @@ in your activated Conda environment.
 
 docker build -t hammer-image .
 
+- NOTE: you will likely need to run the docker application on your mac for this to work. Especially, if you don't have it running in the background
+
 # 3. Run the Docker container
 - You can now run your application with the docker run command. 
 - The -p flag maps the port on your computer to the port in the Docker container.

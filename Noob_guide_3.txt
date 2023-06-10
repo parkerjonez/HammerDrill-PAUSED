@@ -54,3 +54,17 @@ Before moving to production, ensure you've properly handled application logging,
 With Fargate, you also have some additional options for scaling and load balancing, including the ability to use AWS Auto Scaling to automatically adjust the number of running tasks based on demand.
 
 Remember, always follow the best practices such as setting up application logging, monitoring, and continuous integration/continuous deployment (CI/CD) pipelines. AWS provides various services for these, like AWS CloudWatch for monitoring, and AWS CodePipeline for CI/CD.
+
+
+
+### ECR VS ECS ###
+
+Amazon Elastic Container Registry (ECR) and Amazon Elastic Container Service (ECS) are two separate services provided by AWS that work together in the deployment of containerized applications.
+
+Amazon ECR is a fully-managed Docker container registry that makes it easy for developers to store, manage, and deploy Docker container images. Amazon ECR is integrated with Amazon ECS, simplifying your development to production workflow.
+
+Amazon ECS is a highly scalable, high-performance container orchestration service that supports Docker containers and allows you to easily run and scale containerized applications on AWS.
+
+In the context of your project, you've built a Docker image of your Flask application, tagged it, and pushed it to your ECR repository. Now, when you create a task definition in ECS, you reference that Docker image in ECR by its URL.
+
+When ECS launches a new task using that task definition, it pulls the necessary Docker image from your ECR repository. In this way, ECR is acting like the storage and ECS like the engine that runs your application. ECS does the work of orchestrating where your containers run (for instance, managing underlying infrastructure or balancing loads), and ECR stores your container images in a safe and accessible way.

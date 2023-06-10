@@ -1,0 +1,72 @@
+
+CREATE A TASK DEFINITION IN AWS 
+ (Step 6 in the overall steps from LOCAL DEV -> AWS PRODUCTION (ECR) GUIDE)
+
+### MAIN STEPS ###
+
+# 1. Go to the ECS console: Log into the AWS Management Console and go to the ECS (Elastic Container Service) section.
+
+# 2.Create a new Task Definition: Click on "Task Definitions" in the left sidebar, then click "Create new Task Definition".
+
+# 3. Choose Fargate: Select "Fargate" as the launch type compatibility and then "Next step".
+
+# 4. Specify task and container definitions:
+
+- - - Task Definition Name: Enter a name for your task definition.
+
+- - - Task Role: If your application makes requests to other AWS services, you'll need to specify a role that includes the necessary permissions. Otherwise, you can leave it as "None".
+
+- - - Network Mode: Leave this as default (awsvpc), which allows the containers in a task to have their own network interface and IP address.
+
+- - - Task memory (GB) and Task CPU (vCPU): These settings depend on the resources your application needs.
+
+- - - Click on "Add Container" to define your container specifications.
+
+- - - - Container name: Enter a name for your container. my-hammerdrill-appw
+
+- - - - Image: Enter the ECR repository URI for the image you pushed earlier. 071343873801.dkr.ecr.us-east-2.amazonaws.com/hammer-drill:latest
+
+- - - - Memory Limits (MiB): Specify the memory for your container.
+
+- - - - Port mappings: Add port mapping. Enter 5000 (or the port your application is running on) in both the host and container port fields.
+
+- - - - Health check: You can specify the health check parameters like command, interval, timeout, retries, and start period. If you leave this empty, ECS uses default values.
+
+- - - - Environment: You can add environment variables needed for your application.
+
+- - - - Click "Add" to add the container definition to the task.
+
+# 5. Click "Create": After reviewing your settings, click "Create" to create your task definition.
+
+With your Task Definition created, you're ready to create a Service in ECS which runs the defined task. The Service is responsible for running and maintaining a specified number of instances of the task definition in your cluster.
+
+Let me know when you're ready to proceed with creating the ECS Service!
+
+
+
+### TASK ROLE ###
+
+When an application running on ECS needs to interact with other AWS services, it's considered best practice to assign an IAM role to the ECS task. This role is used to delegate permissions that allow the task to make API requests to other AWS services.
+
+To allow your application to send logs to CloudWatch, you should assign a Task Role that includes the necessary permissions. The AmazonEC2ContainerServiceforEC2Role is the managed IAM policy that provides the necessary permissions.
+
+Here are the steps to create a new IAM role for your ECS Task:
+
+Open the IAM console at https://console.aws.amazon.com/iam/.
+
+In the navigation pane, choose Roles, and then choose Create role.
+
+For Select type of trusted entity, choose AWS service.
+
+For Choose the service that will use this role, choose Elastic Container Service.
+
+For Select your use case, choose Elastic Container Service Task, and then choose Next: Permissions.
+
+In the Attach permissions policies section, search for and select the CloudWatchLogsFullAccess policy (this gives full access to all CloudWatch logs). This will give your task the permission to create and manage logs in CloudWatch. If you want to restrict access further, you may need to create a custom IAM policy that more closely follows the principle of least privilege.
+
+Choose Next: Tags. Add any tags you want for the role and then choose Next: Review.
+
+For Role name, give your role a meaningful name (like ECSTaskRoleWithCloudWatch) so you can easily identify it later.
+
+Choose Create role.
+
